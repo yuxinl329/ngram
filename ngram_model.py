@@ -117,7 +117,7 @@ if __name__ == '__main__':
     
     print('Model Training Started')
     for language in LANGUAGE_CODES:
-        m = NgramModel(1, 1)
+        m = NgramModel(2, 1)
         filename = './data/train/languages/' + language + '.txt'
         with codecs.open(filename, 'r', encoding='utf-8', errors='ignore') as f:
             for line in f:
@@ -149,4 +149,4 @@ if __name__ == '__main__':
             count += 1
 
     print('Accuracy: ')
-    print(float("%0.2f" % (correct / count)))
+    print(float("%0.5f" % (correct / count)))

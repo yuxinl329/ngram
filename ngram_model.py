@@ -1,5 +1,6 @@
 import math, random
 import codecs
+from collections import defaultdict
 
 ################################################################################
 # Part 0: Utility Functions
@@ -55,6 +56,8 @@ class NgramModel(object):
         self.n = n
         self.k = k
         self.ngrams = {}
+        self.nlookup = defaultdict(lambda: defaultdict(int))
+
 
     def get_vocab(self):
         ''' Returns the set of characters in the vocab '''
@@ -66,26 +69,32 @@ class NgramModel(object):
 
     def update(self, text):
         for (a, b) in ngrams(self.n, text):
-            if (a, b) in self.ngrams.keys():
-                self.ngrams[(a, b)] = self.ngrams[(a, b)] + 1
-            else: 
-                self.ngrams[(a, b)] = 1;
+            self.nlookup[a][b] += 1
+            # if (a, b) in self.ngrams.keys():
+            #     self.ngrams[(a, b)] = self.ngrams[(a, b)] + 1
+            # else: 
+            #     self.ngrams[(a, b)] = 1;
 
     def prob(self, context, char):
         ''' Returns the probability of char appearing after context '''
         size = len(self.get_vocab()) * 1.0
-        countContext = 0.0
-        countMatch = 0.0
+        print(size * self.k)
+        print(float(sum(self.nlookup[context].values())) + size * self.k)
+        return (self.nlookup[context][char] + self.k) / (float(sum(self.nlookup[context].values())) + size * self.k)
 
-        for (a, b) in self.ngrams.keys():
-            if a == context:
-                countContext += float(self.ngrams[(a, b)])
-                if b == char:
-                    countMatch += float(self.ngrams[(a, b)])
-        if countContext == 0:
-            return 1.0 / size
-        else:
-            return (float(countMatch) + self.k) / (float(countContext) + size * self.k)
+        # size = len(self.get_vocab()) * 1.0
+        # countContext = 0.0
+        # countMatch = 0.0
+
+        # for (a, b) in self.ngrams.keys():
+        #     if a == context:
+        #         countContext += float(self.ngrams[(a, b)])
+        #         if b == char:
+        #             countMatch += float(self.ngrams[(a, b)])
+        # if countContext == 0:
+        #     return 1.0 / size
+        # else:
+        #     return (float(countMatch) + self.k) / (float(countContext) + size * self.k)
 
     def perplexity(self, text):
         ''' Returns the perplexity of text based on the n-grams learned by
